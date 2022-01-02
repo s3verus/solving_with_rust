@@ -2,13 +2,21 @@ use std::io;
 extern crate unicode_segmentation;
 use unicode_segmentation::UnicodeSegmentation;
 
-fn parser(count: usize, line: String, lr_parsing: bool) -> String {
-    //let opens = ["[", "(", "{"];
-    //let closes = ["]", ")", "}"];
+fn parser(count: usize, mut line: String, lr_parsing: bool) -> String {
     let mut rbracket: i32 = 0; // ()
     let mut sbracket: i32 = 0; // []
     let mut cbracket: i32 = 0; // {}
-    for i in 0..count - 1 {
+    let temp = &line[..1];
+    if temp == "}" {
+        line = "{".to_owned() + &line;
+    } else if temp == "]" {
+        line = "[".to_owned() + &line;
+    } else if temp == ")" {
+        line = "(".to_owned() + &line;
+    }
+    let line = &line[..count];
+    println!("first check done, now string is: {}", line);
+    for i in 0..count {
         println!("char in index {} is: {}", i, &line[i..i + 1]);
         if &line[i..i + 1] == "[" {
             sbracket += 1;
@@ -58,6 +66,7 @@ fn parser(count: usize, line: String, lr_parsing: bool) -> String {
         .graphemes(true)
         .rev()
         .collect();
+        println!("reverse is: {}", enil);
         parser(count, enil, false)
     } else {
          let enil: String = line
@@ -78,15 +87,7 @@ fn main() {
     io::stdin()
         .read_line(&mut line)
         .expect("failed to read line!");
-    let temp = &line[..1];
     //println!("first char you entered is: {}", temp);
-    if temp == "}" {
-        line = "{".to_owned() + &line;
-    } else if temp == "]" {
-        line = "[".to_owned() + &line;
-    } else if temp == ")" {
-        line = "(".to_owned() + &line;
-    }
     let count = line.len();
     line = parser(count, line, true).to_string();
     println!("edited string: {}", line);
