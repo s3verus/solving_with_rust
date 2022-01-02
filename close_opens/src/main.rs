@@ -2,7 +2,7 @@ use std::io;
 extern crate unicode_segmentation;
 use unicode_segmentation::UnicodeSegmentation;
 
-fn parser(count: usize, mut line: &String, mut lr_parsing: bool) -> &String {
+fn parser(count: usize, line: String, lr_parsing: bool) -> String {
     //let opens = ["[", "(", "{"];
     //let closes = ["]", ")", "}"];
     let mut rbracket: i32 = 0; // ()
@@ -54,13 +54,11 @@ fn parser(count: usize, mut line: &String, mut lr_parsing: bool) -> &String {
         }
     }
     if lr_parsing == true {
-        lr_parsing = false;
         let enil: String = line
         .graphemes(true)
         .rev()
         .collect();
-        line = parser(count, &enil, lr_parsing);
-        &line
+        parser(count, enil, false)
     } else {
          let enil: String = line
         // Split the string into an Iterator of &strs, where each element is an
@@ -70,13 +68,12 @@ fn parser(count: usize, mut line: &String, mut lr_parsing: bool) -> &String {
         .rev()
         // Collect all the chars into a new owned String.
         .collect();
-        &enil
+        enil
     }
 }
 
 fn main() {
     let mut line = String::new();
-    let mut lr_parsing = true;
     println!("enter string: ");
     io::stdin()
         .read_line(&mut line)
@@ -91,6 +88,6 @@ fn main() {
         line = "(".to_owned() + &line;
     }
     let count = line.len();
-    line = parser(count, &line, true).to_string();
+    line = parser(count, line, true).to_string();
     println!("edited string: {}", line);
 }
